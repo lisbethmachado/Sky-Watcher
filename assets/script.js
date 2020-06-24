@@ -1,15 +1,42 @@
-//     var travels = []
-
-//     for (var i = 0; i < travels.length; i++) {
-//         value = travels[i];
-//         console.log(value);
-//         $(value).html("#forecast");
-//     }
-//     $("#forecast").html("<h1>" + response.name + " Weather Details</h1>");
-
-//     $("#forecast").html(JSON.stringify(response));
-//     $("#forecast").html(JSON.parse(response));
-// });
-
-
-// $("#forecast").prepend(value);
+$(function () {
+    // listen for clicks on search button
+    $("#search-button").on("click", handleSearch);
+  
+    function handleSearch(event) {
+      event.preventDefault();
+      var city = $("#city-input").val();
+  
+      var apiKey = "166a433c57516f51dfab1f7edaed8413";
+      var queryURL =
+        "https://api.openweathermap.org/data/2.5/forecast?q=" +
+        city +
+        "&appid=" +
+        apiKey +
+        "&units=imperial";
+  
+      $.ajax({
+        url: queryURL,
+        method: "GET",
+      }).then(function (response) {
+        console.log(response);
+        var forecastDays = [];
+        forecastDays.push(response.list[0]);
+        forecastDays.push(response.list[8]);
+        forecastDays.push(response.list[16]);
+        forecastDays.push(response.list[24]);
+        forecastDays.push(response.list[32]);
+  
+  
+        for (var i = 0; i < forecastDays.length; i += 1) {
+          var forecastContainer = $("<div>").addClass("forecast-day");
+          var dateEl = $("<div>").text(forecastDays[i].dt);
+          var iconEl = $("<div>").text("icon id: " + forecastDays[i].weather[0].icon);
+          var tempEl = $("<div>").text("Temp: " + forecastDays[i].main.temp + " °F");
+          var humidityEl = $("<div>").text("Humidity: " + forecastDays[i].main.humidity + "%");
+          
+          forecastContainer.append(dateEl, iconEl, tempEl, humidityEl);
+          $("#forecast").append(forecastContainer);
+        }
+      });
+    }
+  });
